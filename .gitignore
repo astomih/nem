@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# for nem
+build
+.cache
+.vscode
+*.code-workspace
