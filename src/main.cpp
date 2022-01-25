@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <math.h>
+#include <memory>
 #include <stdio.h>
 #include <unistd.h> //for sleep
 
@@ -20,7 +21,7 @@ static const int length = sampling_rate * play_time_sec;
 
 static const double PI_2 = 6.2831853;
 
-int main() {
+int main(int argc, char **argv) {
   ALCdevice *device;
   ALCcontext *context;
   uint8_t data[length];
@@ -57,18 +58,17 @@ int main() {
   alcDestroyContext(context);
   alcCloseDevice(device);
 
-  // ファイルロード
-  auto wave_out = new wave_writer("Sin_500Hz.wav");
+  if (argc < 2)
+    return 0;
+  // load file
+  auto wave_out = std::make_unique<wave_writer>(argv[1]);
   if (!wave_out->has_file)
-    exit(1);
+    return 1;
 
-  // ヘッダ構築
+  // build header
   wave_out->set_header(length, ch, sampling_rate, bit_depth);
   wave_out->print_header();
-
-  // 書き出し
+  // write wav
   wave_out->write_file(data);
-
-  delete wave_out;
   return 0;
 }
